@@ -14,18 +14,17 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-
         $creds = $request->only(['email','password']);
 
-        if(!$token=auth()->attempt($creds)){
-            
+        if(!$token = auth()->attempt($creds)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal login'
+                'message' => 'Login gagal'
             ], 401);
         }
+
         return response()->json([
-            'success' =>true,
+            'success' => true,
             'token' => $token,
             'user' => Auth::user()
         ], 201);
@@ -33,20 +32,28 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $pass = Hash::make($request->password);
+        $request->validate([
+            'name' => 'required',
+            'lastname' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6'
+        ]);
 
         $user = new User;
 
-        try{
+        try {
+            $user->name = $request->name;
+            $user->lastname = $request->lastname;
             $user->email = $request->email;
-            $user->password = $pass;
+            $user->password = Hash::make($request->password);;
             $user->save();
+
             return $this->login($request);
         }
         catch(Exception $e){
             return response()->json([
                 'success' => false,
-                'message' => ''.$e
+                'message' => '' . $e
             ], 401);
         }
     }
@@ -57,7 +64,7 @@ class AuthController extends Controller
             JWTAuth::invalidate(JWTAuth::parseToken($request->token));
             return response()->json([
                 'success' => true,
-                'message' => 'Berhasil logout'
+                'message' => 'Logout sukses'
             ]);
         }
         catch(Exception $e){
@@ -68,13 +75,44 @@ class AuthController extends Controller
         }
     }
 
-    public function userInfo(Request $request){
+    public function me() 
+    {
+        return response()->json(auth()->user());
+    }
+
+
+    public function addPhotoScreen(Request $request) 
+    {
+        $user = User::find(Auth::user()->id);
+        $photo = '';
+
+        if($request->photo != '') {
+            $photo = time().'.jpg';
+            file_put_contents('storage/profiles/'.$photo,base64_decode($request->photo));
+            $user->photo = $photo;
+        }
+
+        $user->update();
+
+        return response()->json([
+            'success' => true,
+            'photo' => $photo,
+        ], 201);
+    }
+
+    public function userProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'lastname' => 'required'
+        ]);
+        
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->lastname = $request->lastname;
         $photo = '';
 
-        if($request->photo!=''){
+        if($request->photo != '') {
             $photo = time().'.jpg';
             file_put_contents('storage/profiles/'.$photo,base64_decode($request->photo));
             $user->photo = $photo;
@@ -86,7 +124,6 @@ class AuthController extends Controller
             'success' => true,
             'photo' => $photo,
             'user' => $user
-        ]);
-       
+        ], 201);
     }
 }

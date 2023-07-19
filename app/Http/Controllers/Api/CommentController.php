@@ -51,7 +51,6 @@ class CommentController extends Controller
     {
         $comments = Comment::where('post_id', $request->id)->get();
         
-        // menampilkan semua komentar
         foreach($comments as $comment){
             $comment->user;
         }

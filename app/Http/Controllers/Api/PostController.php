@@ -84,9 +84,9 @@ class PostController extends Controller
 
     public function posts()
     {
-        $posts = Post::orderBy('id', 'title', 'desc')->get();
-        foreach($posts as $post){
+        $posts = Post::orderBy('id', 'desc')->get();
 
+        foreach($posts as $post) {
             $post->user;
             $post['commentsCount'] = count($post->comments);
             $post['likesCount'] = count($post->likes);
@@ -107,7 +107,7 @@ class PostController extends Controller
 
     public function myPosts()
     {
-        $posts = Post::where('user_id', Auth::user()->id)->orderBy('id', 'title', 'desc')->get();
+        $posts = Post::where('user_id', Auth::user()->id)->orderBy('id', 'desc')->get();
         $user = Auth::user();
 
         return response()->json([

@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller
 {
-    public function like(Request $request){
+    public function like(Request $request)
+    {
         $like = Like::where('post_id', $request->id)->where('user_id', Auth::user()->id)->get();
 
         if(count($like) > 0) {

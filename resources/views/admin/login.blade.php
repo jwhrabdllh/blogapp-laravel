@@ -34,7 +34,7 @@
                                         <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" id="email" placeholder="name@example.com" autofocus required value="{{ old('email') }}" />
                                         @error('email')
                                             <div class="invalid-feedback">
-                                                {{ 'This field is required.' }}
+                                                {{ 'Email atau password anda salah.' }}
                                             </div>
                                         @enderror
                                     </div>
@@ -43,7 +43,7 @@
                                         <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password" required />
                                         @error('password')
                                             <span class="invalid-feedback">
-                                                <strong>{{ 'This field is required.' }}</strong>
+                                                <strong>{{ 'Email atau password anda salah.' }}</strong>
                                             </span>
                                         @enderror
                                     </div>

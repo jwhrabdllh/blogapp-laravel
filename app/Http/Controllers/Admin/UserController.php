@@ -20,11 +20,30 @@ class UserController extends Controller
         return view('admin.index', compact('users'));
     }
 
+    public function create()
+    {
+        return view('admin.create');    
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'lastname' => 'required',
+            'email' => 'required|email'
+        ]);
+
+        User::create($request->all());
+        return redirect()->route('admin.index')
+            ->with('success', 'Berhasil menambah data user!');
+    }
+
     public function edit($id)
     {
         $user = User::find($id);
         return view('admin.edit', compact('user'));    
     }
+
 
     public function update(Request $request, $id)
     {

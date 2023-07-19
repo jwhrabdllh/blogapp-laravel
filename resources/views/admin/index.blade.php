@@ -8,11 +8,14 @@
 @section('name-page')
     <div class="content-header">
         <div class="container-fluid">
-        <div class="row ml-2">
-            <div class="col-sm-6 mb-1">
-                <h4 class="text-semibold" style="color: black">Daftar User</h4>
+            <div class="row ml-2">
+                <div class="col-sm-6 mb-2">
+                    <h4 class="text-semibold" style="color: black">Daftar User</h4>
+                </div>
+                <div class="col-sm-6 d-grid gap-2 d-md-flex justify-content-md-end mb-3">
+                    <a href="{{ route('admin.create') }}" class="btn btn-primary mr-5">Create New</a>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 @endsection
@@ -30,6 +33,7 @@
                                         <th scope="col">No</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Email</th>
+                                        <th scope="col">Photo</th>
                                         <th scope="col">Opsi</th>
                                     </tr>
                                 </thead>
@@ -42,6 +46,11 @@
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $user->name }} {{ $user->lastname }}</td>
                                         <td>{{ $user->email }}</td> 
+                                        @if ($user->photo)
+                                            <td><img src="{{ asset('storage/profiles/' . $user->photo) }}" style="display: block; margin-left: auto; margin-right: auto; width: 50%;"></td>
+                                        @else
+                                            <td><img src="" style="display: block; margin-left: auto; margin-right: auto; width: 50%;"></td>
+                                        @endif
                                         <td>
                                             <a href="{{ route('admin.edit', $user->id) }}" class="btn btn-info">Update</a>
                                             <a href="#" class="btn btn-danger delete" data-method="DELETE" data-id="{{ $user->id }}">Delete</a>

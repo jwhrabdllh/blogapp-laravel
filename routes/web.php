@@ -26,6 +26,8 @@ Route::prefix('admin')->group(function() {
     // akses admin
     Route::get('/logout', [AdminAuthController::class, 'logout'])->middleware('admin')->name('admin.logout');
     Route::get('/user', [UserController::class, 'index'])->middleware('admin')->name('admin.index');
+    Route::get('/create', [UserController::class, 'create'])->middleware('admin')->name('admin.create');
+    Route::post('/store', [UserController::class, 'store'])->middleware('admin')->name('admin.store');
     Route::get('/edit/{id}', [UserController::class, 'edit'])->middleware('admin')->name('admin.edit');
     Route::put('/update/{id}', [UserController::class, 'update'])->middleware('admin')->name('admin.update');
     Route::get('/delete/{id}', [UserController::class, 'destroy'])->middleware('admin')->name('admin.delete');

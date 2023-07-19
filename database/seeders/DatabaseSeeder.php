@@ -17,18 +17,18 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // Admin::create([
-        //     'name' => 'Administrator',
-        //     'email' => 'admin@gmail.com',
-        //     'password' => bcrypt('admin123')
-        // ]);
-
-        User::create([
-            'name' => 'Jawahiir',
-            'lastname' => 'Abdillah',
-            'photo' => '1',
-            'email' => 'abdi@gmail.com',
-            'password' => bcrypt('abdi123')
+        Admin::create([
+            'name' => 'Administrator',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('admin123')
         ]);
+
+        // User::create([
+        //     'name' => 'Jawahiir',
+        //     'lastname' => 'Abdillah',
+        //     'photo' => '1',
+        //     'email' => 'dewa@gmail.com',
+        //     'password' => bcrypt('abdi123')
+        // ]);
     }
 }

@@ -41,10 +41,11 @@ Route::group(['middleware' => ['jwtAuth']], function () {
 
 // comment
 Route::group(['middleware' => ['jwtAuth']], function () {
-    Route::post('post/comment', [CommentController::class, 'comments']);
+    Route::get('post/comment/{id}', [CommentController::class, 'comments']);
     Route::post('comment/create', [CommentController::class, 'create']);
     Route::delete('comment/delete/{id}', [CommentController::class, 'delete']);
 });
 
 // like
 Route::post('post/like',[LikeController::class, 'like'])->middleware('jwtAuth');
+Route::get('post/userlike/{id}', [LikeController::class, 'getUserLike'])->middleware('jwtAuth');

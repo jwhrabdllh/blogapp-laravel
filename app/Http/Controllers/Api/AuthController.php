@@ -2,24 +2,63 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $creds = $request->only(['email','password']);
+        // $creds = $request->only(['email','password']);
+
+        // $creds = $request->validate([
+        //     'email' => 'required|email',
+        //     'password' => 'required|min:6'
+        // ]);
+
+        
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $creds = $validator->validated();
+
+        // try {
+        //     if (!$token = auth()->attempt($creds)) {
+        //         throw new \Exception('Email atau password salah', 401);
+        //     }
+        
+        //     return response()->json([
+        //         'success' => true,
+        //         'token' => $token,
+        //         'user' => Auth::user()
+        //     ], 201);
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => $e->getMessage()
+        //     ], $e->getCode());
+        // }
 
         if(!$token = auth()->attempt($creds)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Login gagal'
+                'message' => 'User tidak ditemukan'
             ], 401);
         }
 
@@ -35,7 +74,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6'
         ]);
 
@@ -104,12 +143,18 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'lastname' => 'required'
+            'lastname' => 'required',
+            'email' => 'email|unique:users,email,' . Auth::user()->id
         ]);
         
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->lastname = $request->lastname;
+        
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+
         $photo = '';
 
         if($request->photo != '') {

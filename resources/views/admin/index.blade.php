@@ -33,7 +33,6 @@
                                         <th scope="col">No</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Email</th>
-                                        <th scope="col">Photo</th>
                                         <th scope="col">Opsi</th>
                                     </tr>
                                 </thead>
@@ -45,12 +44,7 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $user->name }} {{ $user->lastname }}</td>
-                                        <td>{{ $user->email }}</td> 
-                                        @if ($user->photo)
-                                            <td><img src="{{ asset('storage/profiles/' . $user->photo) }}" style="display: block; margin-left: auto; margin-right: auto; width: 50%;"></td>
-                                        @else
-                                            <td><img src="" style="display: block; margin-left: auto; margin-right: auto; width: 50%;"></td>
-                                        @endif
+                                        <td>{{ $user->email }}</td>
                                         <td>
                                             <a href="{{ route('admin.edit', $user->id) }}" class="btn btn-info">Update</a>
                                             <a href="#" class="btn btn-danger delete" data-method="DELETE" data-id="{{ $user->id }}">Delete</a>

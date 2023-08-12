@@ -31,4 +31,18 @@ class LikeController extends Controller
             'message' => 'Liked'
         ]);
     }
+
+    public function getUserLike($id)
+    {
+        $likes = Like::where('post_id', $id)->get();
+
+        foreach ($likes as $like) {
+            $like->user;
+        }
+
+        return response()->json([
+            'success' => true,
+            'likes' => $likes
+        ], 200);
+    }
 }

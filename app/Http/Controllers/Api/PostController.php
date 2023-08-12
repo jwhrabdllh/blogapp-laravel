@@ -13,8 +13,9 @@ class PostController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'title' => 'required|max:value',
-            'desc' => 'required',
+            'photo' => 'required',
+            'title' => 'required|max:100',
+            'desc' => 'required|max:1500',
         ]);
 
         $post = new Post;
@@ -33,13 +34,18 @@ class PostController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Berhasil tambah blog',
+            'message' => 'Berhasil menambah postingan',
             'post' => $post
         ], 201);
     }
 
     public function update(Request $request)
     {
+        $request->validate([
+            'title' => 'required|max:100',
+            'desc' => 'required|max:1500',
+        ]);
+
         $post = Post::findOrFail($request->id);
 
         if(Auth::user()->id != $post->user_id){
@@ -55,7 +61,7 @@ class PostController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Berhasil ubah blog'
+            'message' => 'Berhasil mengubah postingan'
         ], 201);
     }
 
@@ -78,7 +84,7 @@ class PostController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Berhasil hapus blog'
+            'message' => 'Berhasil menghapus postingan'
         ]);
     }
 
@@ -93,7 +99,7 @@ class PostController extends Controller
             $post['selfLike'] = false;
 
             foreach($post->likes as $like){
-                if($like->user_id == Auth::user()->id){
+                if($like->user_id == Auth::user()->id) {
                     $post['selfLike'] = true;
                 }
             }
@@ -107,8 +113,21 @@ class PostController extends Controller
 
     public function myPosts()
     {
-        $posts = Post::where('user_id', Auth::user()->id)->orderBy('id', 'desc')->get();
+        $posts = Post::where('user_id', Auth::user()->id)->orderBy('id', 'desc')->get();        
         $user = Auth::user();
+
+        foreach($posts as $post) {
+            $post->user;
+            $post['commentsCount'] = count($post->comments);
+            $post['likesCount'] = count($post->likes);
+            $post['selfLike'] = false;
+
+            foreach($post->likes as $like){
+                if($like->user_id == Auth::user()->id) {
+                    $post['selfLike'] = true;
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,

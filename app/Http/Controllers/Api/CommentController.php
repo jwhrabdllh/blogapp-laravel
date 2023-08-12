@@ -47,9 +47,9 @@ class CommentController extends Controller
         ]);
     }
 
-    public function comments(Request $request)
+    public function comments($id)
     {
-        $comments = Comment::where('post_id', $request->id)->get();
+        $comments = Comment::where('post_id', $id)->get();
         
         foreach($comments as $comment){
             $comment->user;
@@ -58,6 +58,6 @@ class CommentController extends Controller
         return response()->json([
             'success' => true,
             'comments' => $comments
-        ], 201);
+        ], 200);
     }
 }

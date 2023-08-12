@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -30,10 +31,17 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'password' => 'required|min:6'
         ]);
 
-        User::create($request->all());
+        User::create([
+            'name' => $request->name,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
+        
         return redirect()->route('admin.index')
             ->with('success', 'Berhasil menambah data user!');
     }

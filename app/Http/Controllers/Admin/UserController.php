@@ -58,11 +58,17 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
             'lastname' => 'required',
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'password' => 'required|min:6'
         ]);
 
         $user = User::find($id);
-        $user->update($request->all());
+        $user->update([
+            'name' => $request->name,
+            'lastname' => $request->lastname,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
 
         return redirect()->route('admin.index')
             ->with('success', 'Berhasil mengubah data user!');

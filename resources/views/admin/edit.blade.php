@@ -48,6 +48,14 @@
                                         value="{{ $user->email }}" required>
                                         @error('email') <span class="text-danger">{{ 'This field is required.' }}</span> @enderror
                                     </div>
+                                    <div class="form-group">
+                                        <label for="password">
+                                            Password
+                                            <span class="req" style="color: red">*</span>
+                                        </label>
+                                        <input type="text" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                                        @error('password') <span class="text-danger">{{ 'This field is required.' }}</span> @enderror
+                                    </div>
                                     <button type="submit" class="btn btn-primary mt-1">Simpan</button>
                                     <a href="{{ route('admin.index') }}" class="btn btn-default mt-1">Batal</a>
                                 </div>

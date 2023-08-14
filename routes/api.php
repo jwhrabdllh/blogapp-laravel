@@ -26,7 +26,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']); 
 Route::get('logout', [AuthController::class, 'logout']);
-Route::get('me', [AuthController::class, 'me'])->middleware('jwtAuth');
 Route::post('add_photo_screen', [AuthController::class, 'addPhotoScreen'])->middleware('jwtAuth');
 Route::post('user_profile', [AuthController::class, 'userProfile'])->middleware('jwtAuth');
 
@@ -48,4 +47,4 @@ Route::group(['middleware' => ['jwtAuth']], function () {
 
 // like
 Route::post('post/like',[LikeController::class, 'like'])->middleware('jwtAuth');
-Route::get('post/userlike/{id}', [LikeController::class, 'getUserLike'])->middleware('jwtAuth');
+Route::get('post/user_like/{id}', [LikeController::class, 'getUserLike'])->middleware('jwtAuth');

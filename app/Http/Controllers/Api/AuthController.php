@@ -14,15 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     public function login(Request $request)
-    {
-        // $creds = $request->only(['email','password']);
-
-        // $creds = $request->validate([
-        //     'email' => 'required|email',
-        //     'password' => 'required|min:6'
-        // ]);
-
-        
+    {   
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|min:6'
@@ -37,23 +29,6 @@ class AuthController extends Controller
         }
 
         $creds = $validator->validated();
-
-        // try {
-        //     if (!$token = auth()->attempt($creds)) {
-        //         throw new \Exception('Email atau password salah', 401);
-        //     }
-        
-        //     return response()->json([
-        //         'success' => true,
-        //         'token' => $token,
-        //         'user' => Auth::user()
-        //     ], 201);
-        // } catch (\Exception $e) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => $e->getMessage()
-        //     ], $e->getCode());
-        // }
 
         if(!$token = auth()->attempt($creds)) {
             return response()->json([
@@ -113,12 +88,6 @@ class AuthController extends Controller
             ], 401);
         }
     }
-
-    public function me() 
-    {
-        return response()->json(auth()->user());
-    }
-
 
     public function addPhotoScreen(Request $request) 
     {

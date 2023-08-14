@@ -2,30 +2,43 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
-    {
+    {   
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|min:6'
+        ]);
 
-        $creds = $request->only(['email','password']);
-
-        if(!$token=auth()->attempt($creds)){
-            
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal login'
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $creds = $validator->validated();
+
+        if(!$token = auth()->attempt($creds)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan'
             ], 401);
         }
+
         return response()->json([
-            'success' =>true,
+            'success' => true,
             'token' => $token,
             'user' => Auth::user()
         ], 201);
@@ -33,20 +46,28 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $pass = Hash::make($request->password);
+        $request->validate([
+            'name' => 'required',
+            'lastname' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6'
+        ]);
 
         $user = new User;
 
-        try{
+        try {
+            $user->name = $request->name;
+            $user->lastname = $request->lastname;
             $user->email = $request->email;
-            $user->password = $pass;
+            $user->password = Hash::make($request->password);;
             $user->save();
+
             return $this->login($request);
         }
         catch(Exception $e){
             return response()->json([
                 'success' => false,
-                'message' => ''.$e
+                'message' => '' . $e
             ], 401);
         }
     }
@@ -57,7 +78,7 @@ class AuthController extends Controller
             JWTAuth::invalidate(JWTAuth::parseToken($request->token));
             return response()->json([
                 'success' => true,
-                'message' => 'Berhasil logout'
+                'message' => 'Logout sukses'
             ]);
         }
         catch(Exception $e){
@@ -68,13 +89,44 @@ class AuthController extends Controller
         }
     }
 
-    public function userInfo(Request $request){
+    public function addPhotoScreen(Request $request) 
+    {
+        $user = User::find(Auth::user()->id);
+        $photo = '';
+
+        if($request->photo != '') {
+            $photo = time().'.jpg';
+            file_put_contents('storage/profiles/'.$photo,base64_decode($request->photo));
+            $user->photo = $photo;
+        }
+
+        $user->update();
+
+        return response()->json([
+            'success' => true,
+            'photo' => $photo,
+        ], 201);
+    }
+
+    public function userProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'lastname' => 'required',
+            'email' => 'email|unique:users,email,' . Auth::user()->id
+        ]);
+        
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->lastname = $request->lastname;
+        
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+
         $photo = '';
 
-        if($request->photo!=''){
+        if($request->photo != '') {
             $photo = time().'.jpg';
             file_put_contents('storage/profiles/'.$photo,base64_decode($request->photo));
             $user->photo = $photo;
@@ -86,7 +138,6 @@ class AuthController extends Controller
             'success' => true,
             'photo' => $photo,
             'user' => $user
-        ]);
-       
+        ], 201);
     }
 }

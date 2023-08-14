@@ -11,6 +11,10 @@ class CommentController extends Controller
 {
     public function create(Request $request)
     {
+        $request->validate([
+            'comment' => 'required|max:255'
+        ]);
+
         $comment = new Comment;
         $comment->user_id = Auth::user()->id;
         $comment->post_id = $request->id;
@@ -20,35 +24,16 @@ class CommentController extends Controller
 
         return response()->json([
             'success' => true,
-            'comment'=> $comment,
-            'message' => 'Komentar berhasil ditambah'
+            'message' => 'Komentar berhasil ditambah',
+            'comment'=> $comment
         ], 201);
     }
 
-    public function update(Request $request)
+    public function delete($id)
     {
-        $comment = Comment::findOrFail($request->id);
-        
-        if($comment->user_id != Auth::user()->id){
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorize access'
-            ], 401);
-        }
-        $comment->comment = $request->comment;
-        $comment->update();
+        $comment = Comment::findOrFail($id);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Komentar diubah'
-        ], 201);
-    }
-
-    public function delete(Request $request)
-    {
-        $comment = Comment::findOrFail($request->id);
-
-        if($comment->user_id != Auth::user()->id){
+        if($comment->user_id != Auth::user()->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorize access'
@@ -62,10 +47,10 @@ class CommentController extends Controller
         ]);
     }
 
-    public function comments(Request $request)
+    public function comments($id)
     {
-        $comments = Comment::where('post_id', $request->id)->get();
-        //show user of each comment
+        $comments = Comment::where('post_id', $id)->get();
+        
         foreach($comments as $comment){
             $comment->user;
         }
@@ -73,6 +58,6 @@ class CommentController extends Controller
         return response()->json([
             'success' => true,
             'comments' => $comments
-        ], 201);
+        ], 200);
     }
 }

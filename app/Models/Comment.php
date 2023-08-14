@@ -2,20 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Comment extends Model
 {
     use HasFactory;
 
-    public function user(){
+    public function getCreatedAtAttribute()
+    {
+        return Carbon::parse($this->attributes['created_at'])->diffForHumans();
+    }
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function post(){
+    public function post()
+    {
         return $this->belongsTo(Post::class);
     }
 }

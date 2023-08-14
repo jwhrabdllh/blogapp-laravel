@@ -9,17 +9,18 @@ use Illuminate\Support\Facades\Auth;
 
 class LikeController extends Controller
 {
-    public function like(Request $request){
+    public function like(Request $request)
+    {
         $like = Like::where('post_id', $request->id)->where('user_id', Auth::user()->id)->get();
-        //check if it returns 0 then this post is not liked and should be liked else unliked
-        if(count($like)>0){
-            //bcz we cant have likes more than one
+
+        if(count($like) > 0) {
             $like[0]->delete();
             return response()->json([
                 'success' => true,
                 'message' => 'Unliked'
             ]);
         }
+
         $like = new Like;
         $like->user_id = Auth::user()->id;
         $like->post_id = $request->id;
@@ -29,5 +30,19 @@ class LikeController extends Controller
             'success' => true,
             'message' => 'Liked'
         ]);
+    }
+
+    public function getUserLike($id)
+    {
+        $likes = Like::where('post_id', $id)->get();
+
+        foreach ($likes as $like) {
+            $like->user;
+        }
+
+        return response()->json([
+            'success' => true,
+            'likes' => $likes
+        ], 200);
     }
 }

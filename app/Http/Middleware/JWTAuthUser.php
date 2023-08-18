@@ -38,6 +38,6 @@ class JWTAuthUser
         return response()->json([
               'success' => false,
               'message' => $message
-        ]);
+        ], 401);
     }
 }

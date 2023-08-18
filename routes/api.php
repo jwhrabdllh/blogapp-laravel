@@ -32,6 +32,7 @@ Route::post('user_profile', [AuthController::class, 'userProfile'])->middleware(
 // post
 Route::group(['middleware' => ['jwtAuth']], function () {
     Route::get('post/get_posts', [PostController::class, 'posts']);
+    Route::get('post/get_pagination', [PostController::class, 'postsPagination']);
     Route::post('post/create', [PostController::class, 'create']);
     Route::put('post/update', [PostController::class, 'update']);
     Route::delete('post/delete/{id}', [PostController::class, 'delete']);

@@ -53,7 +53,7 @@
                                             Password
                                             <span class="req" style="color: red">*</span>
                                         </label>
-                                        <input type="text" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                                        <input type="text" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
                                         @error('password') <span class="text-danger">{{ 'This field is required.' }}</span> @enderror
                                     </div>
                                     <button type="submit" class="btn btn-primary mt-1">Simpan</button>

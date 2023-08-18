@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
+    protected $guarded = ['id'];
+
     use HasFactory;
 
     public function getCreatedAtAttribute()

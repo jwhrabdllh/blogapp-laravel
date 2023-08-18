@@ -13,7 +13,6 @@ class PostController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'photo' => 'required',
             'title' => 'required|max:100',
             'desc' => 'required|max:1500',
         ]);
@@ -28,7 +27,7 @@ class PostController extends Controller
             file_put_contents('storage/posts/'.$photo, base64_decode($request->photo));
             $post->photo = $photo;
         }
-        
+
         $post->save();
         $post->user;
 
@@ -39,14 +38,14 @@ class PostController extends Controller
         ], 201);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'title' => 'required|max:100',
             'desc' => 'required|max:1500',
         ]);
 
-        $post = Post::findOrFail($request->id);
+        $post = Post::findOrFail($id);
 
         if(Auth::user()->id != $post->user_id){
             return response()->json([
@@ -134,5 +133,61 @@ class PostController extends Controller
             'posts' => $posts,
             'user' => $user
         ]);
+    }
+
+    public function postsPagination(Request $request)
+    {
+        $page = $request->input('page', 1);
+        $size = $request->input('size', 3);
+
+        $posts = Post::orderBy('created_at', 'desc')
+            ->paginate($size, ['*'], 'page', $page);
+
+        $transformedPosts = [];
+
+        foreach ($posts as $post) {
+            $transformedPost = [
+                "id" => $post->id,
+                "user_id" => $post->user->id,
+                "title" => $post->title,
+                "desc" => $post->desc,
+                "photo" => $post->photo,
+                "created_at" => $post->created_at,
+                "updated_at" => $post->updated_at,
+                "commentsCount" => count($post->comments),
+                "likesCount" => count($post->likes),
+                "selfLike" => false,
+                "user" => [
+                    "id" => $post->user->id,
+                    "name" => $post->user->name,
+                    "lastname" => $post->user->lastname,
+                    "photo" => $post->user->photo,
+                    "email" => $post->user->email,
+                    "email_verified_at" => $post->user->email_verified_at,
+                    "created_at" => $post->user->created_at,
+                    "updated_at" => $post->user->updated_at,
+                ],
+                "comments" => $post->comments,
+                "likes" => $post->likes
+            ];
+
+            foreach ($post->likes as $like) {
+                if ($like->user_id == Auth::user()->id) {
+                    $transformedPost['selfLike'] = true;
+                }
+            }
+
+            $transformedPosts[] = $transformedPost;
+        }
+
+        $response = [
+            'page' => $page,
+            'per_page' => $size,
+            'total' => $posts->total(),
+            'total_pages' => $posts->lastPage(),
+            'data' => $transformedPosts,
+        ];
+
+        return response()->json($response);
     }
 }
